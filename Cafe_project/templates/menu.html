@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Cafe Delight</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+<h2>☕ Cafe Delight</h2>
+
+<a href="/logout" class="logout-btn">Logout</a>
+
+</div>
+
+
+<h1 class="title">Our Menu</h1>
+
+
+<div class="menu-grid">
+
+{% for item in items %}
+
+<div class="card">
+
+<img src="{{ item.image }}" class="food-img">
+
+<h3>{{ item.name }}</h3>
+
+<p class="price">₹{{ item.price }}</p>
+
+<button onclick="addToCart({{item.id}}, '{{item.name}}', {{item.price}})">Add to Cart</button>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+<div class="cart-box">
+
+<h2>Your Cart</h2>
+
+<table id="cart">
+
+<tr>
+<th>Item</th>
+<th>Price</th>
+<th>Qty</th>
+<th>Total</th>
+</tr>
+
+</table>
+
+
+<h3>Total Amount: ₹ <span id="total">0</span></h3>
+
+
+<select id="payment">
+
+<option>Cash</option>
+
+<option>UPI</option>
+
+</select>
+
+
+<button class="order-btn" onclick="placeOrder()">Place Order</button>
+
+</div>
+
+
+<script>
+
+let cart=[]
+let total=0
+
+function addToCart(id,name,price){
+
+let qty=1
+
+cart.push({id:id,qty:qty})
+
+let table=document.getElementById("cart")
+
+let row=table.insertRow()
+
+row.insertCell(0).innerHTML=name
+row.insertCell(1).innerHTML=price
+row.insertCell(2).innerHTML=qty
+row.insertCell(3).innerHTML=price
+
+total+=price
+
+document.getElementById("total").innerHTML=total
+
+}
+
+function placeOrder(){
+
+fetch("/place_order",{
+
+method:"POST",
+
+headers:{"Content-Type":"application/json"},
+
+body:JSON.stringify({
+
+items:cart,
+
+payment:document.getElementById("payment").value,
+
+total:total
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+alert("Order placed successfully!")
+
+location.reload()
+
+})
+
+}
+
+</script>
+
+</body>
+
+</html>
